@@ -11,6 +11,7 @@ struct opl_Ab : private abstract_opl {
 
 private:
 
+    size_t border;
     const double NUMERATOR_P = 1;
     void change_p(operation op);
 

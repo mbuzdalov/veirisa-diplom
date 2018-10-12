@@ -138,19 +138,19 @@ void full_testing(problem probl, R rew) {
 
 
 int main() {
-    full_testing<opl, none_reward>(ONE_MAX, NONE);
-    full_testing<opl_separating, none_reward>(ONE_MAX, NONE);
+    //full_testing<opl, none_reward>(ONE_MAX, NONE);
+    //full_testing<opl_separating, none_reward>(ONE_MAX, NONE);
     full_testing<opl_Ab, none_reward>(ONE_MAX, NONE);
 
-    full_testing<oplQ, reward>(ONE_MAX, ABSOLUTELY);
-    full_testing<oplQ, reward>(ONE_MAX, BINARY);
+    //full_testing<oplQ, reward>(ONE_MAX, ABSOLUTELY);
+    //full_testing<oplQ, reward>(ONE_MAX, BINARY);
     full_testing<oplQ, reward>(ONE_MAX, SUBTRACTION);
-    full_testing<oplQ, reward>(ONE_MAX, DIVISION);
+    //full_testing<oplQ, reward>(ONE_MAX, DIVISION);
 
-    full_testing<oplQ_separating, reward>(ONE_MAX, ABSOLUTELY);
-    full_testing<oplQ_separating, reward>(ONE_MAX, BINARY);
+    //full_testing<oplQ_separating, reward>(ONE_MAX, ABSOLUTELY);
+    //full_testing<oplQ_separating, reward>(ONE_MAX, BINARY);
     full_testing<oplQ_separating, reward>(ONE_MAX, SUBTRACTION);
-    full_testing<oplQ_separating, reward>(ONE_MAX, DIVISION);
+    //full_testing<oplQ_separating, reward>(ONE_MAX, DIVISION);
 
     return 0;
 }

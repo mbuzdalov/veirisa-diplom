@@ -25,6 +25,7 @@ size_t abstract_opl::init_func(const string& s) {
 }
 
 size_t abstract_opl::func(const representative& parent, const vector<size_t>& dif) {
+    assert(!dif.empty());
     if (probl == ONE_MAX) {
         size_t result = parent.f;
         for (size_t j = 0; j < dif.size(); ++j) {
@@ -37,7 +38,6 @@ size_t abstract_opl::func(const representative& parent, const vector<size_t>& di
         return result;
     }
     if (probl == LEADING_ONES) {
-        assert(!dif.empty());
         if (dif[0] < parent.f) {
             return dif[0];
         }

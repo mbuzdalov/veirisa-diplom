@@ -45,7 +45,7 @@ solution oplQ_separating::generate_solution(const string& init_s) {
             }
             if (f >= best_f) {
                 best_f = f;
-                best_dif = dif;
+                best_dif = move(dif);
                 best_op = is_mul ? MUL : DIV;
             }
             if (f > cur.f) {
@@ -56,13 +56,13 @@ solution oplQ_separating::generate_solution(const string& init_s) {
                 }
             }
         }
-        if (best_f >= cur.f) {
-            cur.change(best_dif, best_f);
-        }
         learn(suc, MUL, get_reward(best_f_mul, cur.f), new_suc_mul);
         learn(suc, DIV, get_reward(best_f_div, cur.f), new_suc_div);
         size_t best_suc = best_op == MUL ? new_suc_mul : new_suc_div;
         operation choosed_op = change_p(best_suc);
+        if (best_f >= cur.f) {
+            cur.change(best_dif, best_f);
+        }
         evaluations += lambda;
         ++generations;
         suc = choosed_op == MUL ? new_suc_mul : new_suc_div;
