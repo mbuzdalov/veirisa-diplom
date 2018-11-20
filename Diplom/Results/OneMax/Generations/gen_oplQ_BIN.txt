@@ -1,0 +1,3 @@
+oplQ_BIN (n - lambda - generations - deviation):
+
+100000	1600	16675	0

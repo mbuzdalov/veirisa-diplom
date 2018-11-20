@@ -5,9 +5,6 @@
 #include "source.h"
 
 struct abstract_opl {
-    string opl_name;
-    string package_name;
-
     problem probl;
     size_t lambda, n;
     double p;

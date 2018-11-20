@@ -1,0 +1,3 @@
+oplQ_DIV (n - lambda - generations - deviation):
+
+1000	50	10708	0

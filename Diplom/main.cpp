@@ -33,7 +33,6 @@ aver_solution aver_solut[2][LAMBDA_SIZE][N_SIZE];
 
 
 const size_t TEST_SIZE = 100;
-
 solution test_solut[TEST_SIZE];
 
 
@@ -118,18 +117,22 @@ void full_testing(problem probl, R rew) {
         size_t lambda = small_lambda[i];
         for (size_t j = 0; j < N_SIZE; ++j) {
             size_t n = small_n[j];
-            cout << "lambda: " << lambda << "  n: " << n << "\n";
+            cout << "lambda: " << lambda << "  n: " << n;// << "\n";
             OPL solver = create_solver<OPL>(probl, lambda, n, rew);
             testing<OPL>(SMALL, i, j, solver);
+            cout << "  evaluations: " << aver_solut[SMALL][i][j].evaluations
+                 << "  deviation: " << aver_solut[SMALL][i][j].eval_deviation << "\n";
         }
     }
     for (size_t i = 0; i < BIG_LAMBDA_SIZE; ++i) {
         size_t lambda = big_lambda[i];
         for (size_t j = 0; j < N_SIZE; ++j) {
             size_t n = big_n[j];
-            cout << "lambda: " << lambda << "  n: " << n << "\n";
+            cout << "lambda: " << lambda << "  n: " << n;// << "\n";
             OPL solver = create_solver<OPL>(probl, lambda, n, rew);
             testing<OPL>(BIG, i, j, solver);
+            cout << "  evaluations: " << aver_solut[BIG][i][j].evaluations
+                 << "  deviation: " << aver_solut[BIG][i][j].eval_deviation << "\n";
         }
     }
 
@@ -139,17 +142,17 @@ void full_testing(problem probl, R rew) {
 
 int main() {
     //full_testing<opl, none_reward>(ONE_MAX, NONE);
-    //full_testing<opl_separating, none_reward>(ONE_MAX, NONE);
+    full_testing<opl_separating, none_reward>(ONE_MAX, NONE);
     full_testing<opl_Ab, none_reward>(ONE_MAX, NONE);
 
     //full_testing<oplQ, reward>(ONE_MAX, ABSOLUTELY);
     //full_testing<oplQ, reward>(ONE_MAX, BINARY);
-    full_testing<oplQ, reward>(ONE_MAX, SUBTRACTION);
-    //full_testing<oplQ, reward>(ONE_MAX, DIVISION);
+    //full_testing<oplQ, reward>(ONE_MAX, SUBTRACTION);
+    full_testing<oplQ, reward>(ONE_MAX, DIVISION);
 
     //full_testing<oplQ_separating, reward>(ONE_MAX, ABSOLUTELY);
     //full_testing<oplQ_separating, reward>(ONE_MAX, BINARY);
-    full_testing<oplQ_separating, reward>(ONE_MAX, SUBTRACTION);
+    //full_testing<oplQ_separating, reward>(ONE_MAX, SUBTRACTION);
     //full_testing<oplQ_separating, reward>(ONE_MAX, DIVISION);
 
     return 0;

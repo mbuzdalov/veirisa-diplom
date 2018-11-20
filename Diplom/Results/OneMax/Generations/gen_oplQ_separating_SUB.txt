@@ -1,0 +1,3 @@
+oplQ_separating_SUB (n - lambda - generations - deviation):
+
+100000	1600	16866	0

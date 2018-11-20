@@ -10,6 +10,7 @@ oplQ_separating::oplQ_separating(problem new_probl, size_t new_lambda, size_t ne
     max_p = 1.0 / 4;
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
+    Q.resize((new_lambda + 1) / 2 + 1);
 }
 
 solution oplQ_separating::generate_solution(const string& init_s) {
@@ -31,11 +32,6 @@ solution oplQ_separating::generate_solution(const string& init_s) {
         for (size_t i = 0; i < lambda; ++i) {
             bool is_mul = i < (lambda >> 1);
             vector<size_t> dif = move(generate_dif(cur.s, is_mul ? p * 2 : p / 2));
-            for (int i = 0; i < dif.size(); ++i) {
-                if (dif[i] > n) {
-                    cout << "~~~" << dif[i] << "~~~" << "\n";
-                }
-            }
             size_t f = func(cur, dif);
             if (is_mul && f >= best_f_mul) {
                 best_f_mul = f;

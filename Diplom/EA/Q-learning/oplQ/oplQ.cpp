@@ -10,6 +10,7 @@ oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, reward new_rew) {
     max_p = 1.0 / 2;
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
+    Q.resize(new_lambda + 1);
 }
 
 solution oplQ::generate_solution(const string& init_s) {

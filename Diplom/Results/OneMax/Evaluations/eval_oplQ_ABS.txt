@@ -1,0 +1,3 @@
+oplQ_ABS (n - lambda - evaluations - deviation):
+
+1600	100000	26107201	0

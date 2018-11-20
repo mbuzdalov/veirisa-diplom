@@ -1,0 +1,3 @@
+oplQ_separating_SUB (n - lambda - evaluations - deviation):
+
+1600	100000	26985601	0

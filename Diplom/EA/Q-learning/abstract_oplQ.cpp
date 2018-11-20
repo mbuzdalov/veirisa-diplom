@@ -1,9 +1,8 @@
 #include "abstract_oplQ.h"
 
 void abstract_oplQ::init_Q() {
-    Q.resize(lambda + 1);
     for (size_t i = 0; i <= lambda; ++i) {
-        Q[i][0] = Q[i][1] = 0;
+        Q[i][MUL] = Q[i][DIV] = 0;
     }
 }
 

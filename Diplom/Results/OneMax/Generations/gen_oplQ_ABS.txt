@@ -1,0 +1,3 @@
+oplQ_ABS (n - lambda - generations - deviation):
+
+100000	1600	16317	0

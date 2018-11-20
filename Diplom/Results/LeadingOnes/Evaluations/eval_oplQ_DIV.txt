@@ -1,0 +1,3 @@
+oplQ_DIV (n - lambda - evaluations - deviation):
+
+50	1000	535401	0

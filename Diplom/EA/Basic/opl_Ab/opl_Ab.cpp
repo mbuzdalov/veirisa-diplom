@@ -5,9 +5,9 @@ opl_Ab::opl_Ab(problem new_probl, size_t new_lambda, size_t new_n) {
     lambda = new_lambda;
     n = new_n;
     def_p = NUMERATOR_P / new_n;
-    min_p = 1.0 / (2 * new_n);
+    min_p = 1.0 / new_n;
     max_p = 1.0 / 2;
-    border = max((size_t)1, new_n / 100);
+    border = max((size_t)1, lambda / 20);
 }
 
 void opl_Ab::change_p(operation op) {

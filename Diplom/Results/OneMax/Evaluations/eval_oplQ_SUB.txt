@@ -1,0 +1,3 @@
+oplQ_SUB (n - lambda - evaluations - deviation):
+
+6400	100000	80183681	1316008
