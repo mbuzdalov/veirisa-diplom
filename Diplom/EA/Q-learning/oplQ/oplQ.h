@@ -8,6 +8,7 @@ struct oplQ : private abstract_oplQ {
 
     explicit oplQ(problem new_probl, size_t new_lambda, size_t new_n, reward new_rew);
     solution generate_solution(const string& init_s);
+    inline vector<parameters> get_params() {return params;}
 
 private:
 

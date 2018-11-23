@@ -8,6 +8,7 @@ struct opl_Ab : private abstract_opl {
 
     explicit opl_Ab(problem new_probl, size_t new_lambda, size_t new_n);
     solution generate_solution(const string& init_s);
+    inline vector<parameters> get_params() {return params;}
 
 private:
 

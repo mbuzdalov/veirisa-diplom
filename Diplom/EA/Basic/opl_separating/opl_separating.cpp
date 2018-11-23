@@ -5,7 +5,7 @@ opl_separating::opl_separating(problem new_probl, size_t new_lambda, size_t new_
     lambda = new_lambda;
     n = new_n;
     def_p = NUMERATOR_P / new_n;
-    min_p = 2.0 / new_n;
+    min_p = 2.0 / (new_n * new_n);
     max_p = 1.0 / 4;
 }
 
@@ -29,6 +29,7 @@ solution opl_separating::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     representative cur(init_s, init_func(init_s));
+    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     while (cur.f < n) {
@@ -49,6 +50,7 @@ solution opl_separating::generate_solution(const string& init_s) {
             cur.change(best_dif, best_f);
         }
         change_p(best_op);
+        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
     }

@@ -68,10 +68,10 @@ size_t abstract_opl::func(const representative& parent, const vector<size_t>& di
 
 vector<size_t> abstract_opl::generate_dif(const string& s, double prob) {
     vector<size_t> dif;
-    size_t ind = next_inv_ind(true, 0, prob);
+    size_t ind = next_inv_ind(0, prob);
     while (ind < n) {
         dif.push_back(ind);
-        ind = next_inv_ind(false, ind + 1, prob);
+        ind = next_inv_ind(ind + 1, prob);
     }
     return dif;
 }

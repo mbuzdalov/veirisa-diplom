@@ -10,6 +10,7 @@ opl::opl(problem new_probl, size_t new_lambda, size_t new_n) {
 solution opl::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     representative cur(init_s, init_func(init_s));
+    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     while (cur.f < n) {
@@ -26,6 +27,7 @@ solution opl::generate_solution(const string& init_s) {
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }
+        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
     }

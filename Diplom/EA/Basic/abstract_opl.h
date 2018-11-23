@@ -9,6 +9,7 @@ struct abstract_opl {
     size_t lambda, n;
     double p;
     double def_p, min_p, max_p;
+    vector<parameters> params;
 
     mt19937 generator = mt19937(unsigned(time(0)));
 
@@ -34,6 +35,11 @@ struct abstract_opl {
         p = def_p;
     }
 
+    inline void init_params(size_t in_f, double in_p) {
+        params.clear();
+        params.push_back({in_f, in_p});
+    }
+
     inline bool choice(double prob) {
         return (double)generator() / generator.max() < prob;
     }
@@ -42,10 +48,11 @@ struct abstract_opl {
         return start_ind + size_t(log((double)generator() / generator.max()) / log(1 - prob));
     }
 
-    inline size_t next_inv_ind(bool is_first, size_t start_ind, double prob) {
+    inline size_t next_inv_ind( size_t start_ind, double prob) {
         size_t next_ind = get_next_ind(start_ind, prob);
-        while (is_first && next_ind >= n) {
-            next_ind = get_next_ind(start_ind, prob);
+        while (start_ind == 0 && next_ind >= n) {
+            next_ind = generator() % n;
+            //next_ind = get_next_ind(start_ind, prob);
         }
         return next_ind;
     }

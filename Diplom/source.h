@@ -19,15 +19,11 @@ enum problem {
 struct solution {
     size_t evaluations;
     size_t generations;
+};
 
-    solution() :
-            evaluations(),
-            generations()
-    {};
-    solution(size_t eval, size_t gen) :
-            evaluations(eval),
-            generations(gen)
-    {}
+struct parameters {
+    size_t f;
+    double p;
 };
 
 struct aver_solution {
@@ -35,19 +31,6 @@ struct aver_solution {
     size_t eval_deviation;
     size_t generations;
     size_t gen_deviation;
-
-    aver_solution() :
-            evaluations(),
-            eval_deviation(),
-            generations(),
-            gen_deviation()
-    {};
-    aver_solution(size_t eval, size_t eval_div, size_t gen, size_t gen_div) :
-            evaluations(eval),
-            eval_deviation(eval_div),
-            generations(gen),
-            gen_deviation(gen_div)
-    {}
 };
 
 enum test_size {

@@ -6,7 +6,7 @@ oplQ_separating::oplQ_separating(problem new_probl, size_t new_lambda, size_t ne
     n = new_n;
     rew = new_rew;
     def_p = NUMERATOR_P / new_n;
-    min_p = 2.0 / new_n;
+    min_p = 2.0 / (new_n * new_n);
     max_p = 1.0 / 4;
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
@@ -18,6 +18,7 @@ solution oplQ_separating::generate_solution(const string& init_s) {
     init_p();
     init_Q();
     representative cur(init_s, init_func(init_s));
+    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     size_t suc = UNDEF_STATE;
@@ -59,6 +60,7 @@ solution oplQ_separating::generate_solution(const string& init_s) {
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }
+        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
         suc = choosed_op == MUL ? new_suc_mul : new_suc_div;

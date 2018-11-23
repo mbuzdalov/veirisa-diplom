@@ -1,3 +1,0 @@
-oplQ_BIN (n - lambda - evaluations - deviation):
-
-1600	100000	26680001	0

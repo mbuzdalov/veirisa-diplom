@@ -5,7 +5,7 @@ opl_Ab::opl_Ab(problem new_probl, size_t new_lambda, size_t new_n) {
     lambda = new_lambda;
     n = new_n;
     def_p = NUMERATOR_P / new_n;
-    min_p = 1.0 / new_n;
+    min_p = 1.0 / (new_n * new_n);
     max_p = 1.0 / 2;
     border = max((size_t)1, lambda / 20);
 }
@@ -22,6 +22,7 @@ solution opl_Ab::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     representative cur(init_s, init_func(init_s));
+    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     while (cur.f < n) {
@@ -43,6 +44,7 @@ solution opl_Ab::generate_solution(const string& init_s) {
             cur.change(best_dif, best_f);
         }
         change_p(better_children >= border ? MUL : DIV);
+        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
     }
