@@ -1,12 +1,12 @@
 #include "opl_separating.h"
 
-opl_separating::opl_separating(problem new_probl, size_t new_lambda, size_t new_n) {
+opl_separating::opl_separating(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
-    def_p = NUMERATOR_P / new_n;
-    min_p = 2.0 / (new_n * new_n);
+    def_p = NUMERATOR_P / n;
     max_p = 1.0 / 4;
+    min_p = 2.0 * calc_low_bound(l_bound);
 }
 
 void opl_separating::change_p(operation op) {
@@ -28,8 +28,8 @@ void opl_separating::change_p(operation op) {
 solution opl_separating::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
+    init_params();
     representative cur(init_s, init_func(init_s));
-    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     while (cur.f < n) {
@@ -46,13 +46,14 @@ solution opl_separating::generate_solution(const string& init_s) {
                 best_op = is_mul ? MUL : DIV;
             }
         }
+        update_params(cur.f, best_op == MUL ? p * 2 : p / 2);
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }
         change_p(best_op);
-        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
     }
+    update_params(cur.f, p);
     return {evaluations, generations};
 }

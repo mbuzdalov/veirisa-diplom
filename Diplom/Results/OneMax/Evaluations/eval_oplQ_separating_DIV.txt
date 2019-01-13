@@ -1,3 +1,0 @@
-oplQ_separating_DIV (n - lambda - evaluations - deviation):
-
-1600	100000	27590401	0

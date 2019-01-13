@@ -1,3 +1,0 @@
-oplQ_SUB (n - lambda - generations - deviation):
-
-100000	6400	12529	205

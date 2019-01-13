@@ -9,7 +9,9 @@ struct abstract_opl {
     size_t lambda, n;
     double p;
     double def_p, min_p, max_p;
-    vector<parameters> params;
+    vector<size_t> param_f;
+    vector<size_t> param_p_size;
+    vector<double> param_p_sum;
 
     mt19937 generator = mt19937(unsigned(time(0)));
 
@@ -35,11 +37,6 @@ struct abstract_opl {
         p = def_p;
     }
 
-    inline void init_params(size_t in_f, double in_p) {
-        params.clear();
-        params.push_back({in_f, in_p});
-    }
-
     inline bool choice(double prob) {
         return (double)generator() / generator.max() < prob;
     }
@@ -57,6 +54,10 @@ struct abstract_opl {
         return next_ind;
     }
 
+    double calc_low_bound(low_bound l_bound);
+    void init_params();
+    void update_params(size_t cur_f, double cur_p);
+    parameters convert_params();
     size_t init_func(const string& s);
     size_t func(const representative& parent, const vector<size_t>& dif);
     vector<size_t> generate_dif(const string& s, double prob);

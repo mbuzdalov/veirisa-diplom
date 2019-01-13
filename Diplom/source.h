@@ -2,6 +2,7 @@
 #define DIPLOM_SOURCE_H
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -12,8 +13,9 @@
 #include <cassert>
 using namespace std;
 
-enum problem {
-    ONE_MAX, LEADING_ONES
+
+enum operation {
+    MUL, DIV, UNDEF
 };
 
 struct solution {
@@ -22,9 +24,28 @@ struct solution {
 };
 
 struct parameters {
-    size_t f;
-    double p;
+    vector<size_t> f;
+    vector<double> p;
 };
+
+
+
+enum problem {
+    ONE_MAX, LEADING_ONES
+};
+
+enum low_bound {
+    ZERO, LINEAR, QUADRATIC
+};
+
+enum none_reward {
+    NONE
+};
+
+enum reward {
+    ABSOLUTELY, BINARY, SUBTRACTION, DIVISION
+};
+
 
 struct aver_solution {
     size_t evaluations;
@@ -35,18 +56,6 @@ struct aver_solution {
 
 enum test_size {
     SMALL, BIG
-};
-
-enum operation {
-    MUL, DIV, UNDEF
-};
-
-enum none_reward {
-    NONE
-};
-
-enum reward {
-    ABSOLUTELY, BINARY, SUBTRACTION, DIVISION
 };
 
 #endif //DIPLOM_SOURCE_H

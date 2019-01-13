@@ -21,6 +21,18 @@ string get_problem_name(problem probl) {
 }
 
 
+string get_low_bound_name(low_bound l_bound) {
+    switch (l_bound) {
+        case LINEAR:
+            return "_(line)";
+        case QUADRATIC:
+            return "_(quad)";
+        default:
+            return "";
+    }
+}
+
+
 string get_reward_name(none_reward rew) {
     return "";
 }

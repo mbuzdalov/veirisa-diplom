@@ -1,12 +1,12 @@
 #include "opl_Ab.h"
 
-opl_Ab::opl_Ab(problem new_probl, size_t new_lambda, size_t new_n) {
+opl_Ab::opl_Ab(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
-    def_p = NUMERATOR_P / new_n;
-    min_p = 1.0 / (new_n * new_n);
+    def_p = NUMERATOR_P / n;
     max_p = 1.0 / 2;
+    min_p = calc_low_bound(l_bound);
     border = max((size_t)1, lambda / 20);
 }
 
@@ -21,8 +21,8 @@ void opl_Ab::change_p(operation op) {
 solution opl_Ab::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
+    init_params();
     representative cur(init_s, init_func(init_s));
-    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     while (cur.f < n) {
@@ -40,13 +40,14 @@ solution opl_Ab::generate_solution(const string& init_s) {
                 ++better_children;
             }
         }
+        update_params(cur.f, p);
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }
         change_p(better_children >= border ? MUL : DIV);
-        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
     }
+    update_params(cur.f, p);
     return {evaluations, generations};
 }

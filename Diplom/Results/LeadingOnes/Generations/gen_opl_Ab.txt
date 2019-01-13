@@ -1,3 +1,0 @@
-opl_Ab (n - lambda - generations - deviation):
-
-1000	50	25869	0

@@ -1,3 +1,0 @@
-opl_Ab (n - lambda - evaluations - deviation):
-
-50	1000	1293451	0

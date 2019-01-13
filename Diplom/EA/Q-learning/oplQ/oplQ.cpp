@@ -1,24 +1,24 @@
 #include "oplQ.h"
 
-oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, reward new_rew) {
+oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
     rew = new_rew;
-    def_p = NUMERATOR_P / new_n;
-    min_p = 1.0 / (new_n * new_n);
+    def_p = NUMERATOR_P / n;
     max_p = 1.0 / 2;
+    min_p = calc_low_bound(l_bound);
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
-    Q.resize(new_lambda + 1);
+    Q.resize(lambda + 1);
 }
 
 solution oplQ::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     init_Q();
+    init_params();
     representative cur(init_s, init_func(init_s));
-    init_params(cur.f, p);
     size_t evaluations = 1;
     size_t generations = 0;
     size_t suc = UNDEF_STATE;
@@ -38,16 +38,17 @@ solution oplQ::generate_solution(const string& init_s) {
                 ++new_suc;
             }
         }
+        update_params(cur.f, p);
         learn(suc, op, get_reward(best_f, cur.f), new_suc);
         operation new_op = change_p(new_suc);
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }
-        params.push_back({cur.f, p});
         evaluations += lambda;
         ++generations;
         suc = new_suc;
         op = new_op;
     }
+    update_params(cur.f, p);
     return {evaluations, generations};
 }
