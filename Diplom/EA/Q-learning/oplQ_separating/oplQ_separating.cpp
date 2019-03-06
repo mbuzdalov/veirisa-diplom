@@ -22,6 +22,7 @@ solution oplQ_separating::generate_solution(const string& init_s) {
     size_t evaluations = 1;
     size_t generations = 0;
     size_t suc = UNDEF_STATE;
+    size_t half_lambda = lambda >> 1;
     while (cur.f < n) {
         vector<size_t> best_dif;
         size_t best_f = 0;
@@ -31,7 +32,10 @@ solution oplQ_separating::generate_solution(const string& init_s) {
         size_t new_suc_mul = 0;
         size_t new_suc_div = 0;
         for (size_t i = 0; i < lambda; ++i) {
-            bool is_mul = i < (lambda >> 1);
+            bool is_mul = i < half_lambda;
+            if (i == half_lambda && lambda % 2 != 0 && choice(0.5)) {
+                is_mul = !is_mul;
+            }
             vector<size_t> dif = move(generate_dif(cur.s, is_mul ? p * 2 : p / 2));
             size_t f = func(cur, dif);
             if (is_mul && f >= best_f_mul) {

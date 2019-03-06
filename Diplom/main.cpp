@@ -36,13 +36,13 @@ OPLQ create_solver(problem probl, size_t lambda, size_t n, low_bound l_bound, re
 
 const size_t SMALL_LAMBDA_SIZE = 0;
 const size_t small_lambda[SMALL_LAMBDA_SIZE] = {};
-const size_t BIG_LAMBDA_SIZE = 10;
-const size_t big_lambda[BIG_LAMBDA_SIZE] = {1, 5, 10, 50, 100, 200, 400, 800, 1600, 3200};
+const size_t BIG_LAMBDA_SIZE = 12;
+const size_t big_lambda[BIG_LAMBDA_SIZE] = {1, 2, 5, 10, 50, 100, 200, 400, 800, 1600, 3200, 6400};
 const size_t LAMBDA_SIZE = SMALL_LAMBDA_SIZE + BIG_LAMBDA_SIZE;
 
-const size_t N_SIZE = 10;
-const size_t small_n[N_SIZE] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-const size_t big_n[N_SIZE] = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
+const size_t N_SIZE = 2;
+const size_t small_n[N_SIZE] = {100, 1000};
+const size_t big_n[N_SIZE] = {10000, 100000};
 
 aver_solution aver_solut[2][LAMBDA_SIZE][N_SIZE];
 
@@ -75,8 +75,8 @@ void testing(test_size size_ind, size_t lam_ind, size_t n_ind, OPL solver) {
 }
 
 void write_solution(const string& probl_name, const string& algorithm_name) {
-    //ofstream fout_eval("Results/" + probl_name + "/Evaluations/eval_" + algorithm_name + ".txt");
-    ofstream fout_eval("Results/eval_" + algorithm_name + ".txt");
+
+    ofstream fout_eval("Results/" + probl_name + "/Evaluations/eval_" + algorithm_name + ".txt");
     //fout_eval << algorithm_name << " (n - lambda - evaluations - deviation):\n\n";
     for (size_t i = 0; i < SMALL_LAMBDA_SIZE; ++i) {
         size_t lambda = small_lambda[i];
@@ -99,8 +99,7 @@ void write_solution(const string& probl_name, const string& algorithm_name) {
         }
     }
 
-    //ofstream fout_gen("Results/" + probl_name + "/Generations/gen_" + algorithm_name + ".txt");
-    ofstream fout_gen("Results/gen_" + algorithm_name + ".txt");
+    ofstream fout_gen("Results/" + probl_name + "/Generations/gen_" + algorithm_name + ".txt");
     //fout_gen << algorithm_name << " (n - lambda - generations - deviation):\n\n";
     for (size_t j = 0; j < N_SIZE; ++j) {
         size_t n = big_n[j];
@@ -126,8 +125,8 @@ void full_testing(problem probl, low_bound l_bound, R rew) {
             cout << "lambda: " << lambda << "  n: " << n;// << "\n";
             OPL solver = create_solver<OPL>(probl, lambda, n, l_bound, rew);
             testing<OPL>(SMALL, i, j, solver);
-            cout << "  evaluations: " << aver_solut[SMALL][i][j].evaluations
-                 << "  deviation: " << aver_solut[SMALL][i][j].eval_deviation << "\n";
+            cout << "  generations: " << aver_solut[SMALL][i][j].generations
+                 << "  deviation: " << aver_solut[SMALL][i][j].gen_deviation << "\n";
         }
     }
     for (size_t i = 0; i < BIG_LAMBDA_SIZE; ++i) {
@@ -135,10 +134,11 @@ void full_testing(problem probl, low_bound l_bound, R rew) {
         for (size_t j = 0; j < N_SIZE; ++j) {
             size_t n = big_n[j];
             cout << "lambda: " << lambda << "  n: " << n;// << "\n";
+            clock_t t = clock();
             OPL solver = create_solver<OPL>(probl, lambda, n, l_bound, rew);
             testing<OPL>(BIG, i, j, solver);
-            cout << "  evaluations: " << aver_solut[BIG][i][j].evaluations
-                 << "  deviation: " << aver_solut[BIG][i][j].eval_deviation << "\n";
+            cout << "  generations: " << aver_solut[BIG][i][j].generations
+                 << "  deviation: " << aver_solut[BIG][i][j].gen_deviation << "\n";
         }
     }
 
@@ -148,7 +148,7 @@ void full_testing(problem probl, low_bound l_bound, R rew) {
 
 // ------------------------------------- Fixed runtime -------------------------------------
 
-const size_t fr_lambda = 400;
+const size_t fr_lambda = 1600;
 const size_t fr_n = 10000;
 const string fr_test_string = random_string(generator, fr_n);
 
@@ -156,7 +156,7 @@ parameters params;
 
 
 void write_parameters(const string& probl_name, const string& algorithm_name) {
-    ofstream fout_func("Results/" + probl_name + "/Function/func_" + algorithm_name + ".txt");
+    ofstream fout_func("Results/" + probl_name + "/Function/" + to_string(fr_lambda) + "/func_" + algorithm_name + ".txt");
     //fout_func << algorithm_name << " (function):\n";
     //fout_func << "~  n = " << fr_n << "  ~  " << "lambda = " << fr_lambda << "  ~\n\n";
     cout << "\nsize: " << params.f.size() << "\n";
@@ -164,7 +164,9 @@ void write_parameters(const string& probl_name, const string& algorithm_name) {
         fout_func << params.f[i] << "\t";
     }
 
-    ofstream fout_prob("Results/" + probl_name + "/Probability/prob_" + algorithm_name + ".txt");
+    cout << "! " << params.f.size() << "\n\n";
+
+    ofstream fout_prob("Results/" + probl_name + "/Probability/" + to_string(fr_lambda) + "/prob_" + algorithm_name + ".txt");
     //fout_prob << algorithm_name << " (probability):\n";
     //fout_prob << "~  n = " << fr_n << "  ~  " << "lambda = " << fr_lambda << "  ~\n\n";
     for (size_t i = 0; i < params.p.size(); ++i) {
@@ -192,11 +194,15 @@ void fixed_runtime(problem probl, low_bound l_bound, R rew) {
 
 int main() {
 
-    fixed_runtime<opl, none_reward>(ONE_MAX, ZERO, NONE);
-    fixed_runtime<opl_separating, none_reward>(ONE_MAX, LINEAR, NONE);
-    fixed_runtime<opl_Ab, none_reward>(ONE_MAX, LINEAR, NONE);
-    fixed_runtime<opl_separating, none_reward>(ONE_MAX, QUADRATIC, NONE);
-    fixed_runtime<opl_Ab, none_reward>(ONE_MAX, QUADRATIC, NONE);
+    full_testing<opl, none_reward>(ONE_MAX, ZERO, NONE);
+
+    full_testing<opl_separating, none_reward>(ONE_MAX, LINEAR, NONE);
+    full_testing<opl_Ab, none_reward>(ONE_MAX, LINEAR, NONE);
+    full_testing<oplQ, reward>(ONE_MAX, LINEAR, DIVISION);
+
+    full_testing<opl_separating, none_reward>(ONE_MAX, QUADRATIC, NONE);
+    full_testing<opl_Ab, none_reward>(ONE_MAX, QUADRATIC, NONE);
+    full_testing<oplQ, reward>(ONE_MAX, QUADRATIC, DIVISION);
 
     return 0;
 }
