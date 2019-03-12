@@ -6,8 +6,9 @@
 #include <EA/Basic/opl/opl.h>
 #include <EA/Basic/opl_Ab/opl_Ab.h>
 #include <EA/Basic/opl_separating/opl_separating.h>
-#include <EA/Q-learning/oplQ/oplQ.h>
-#include <EA/Q-learning/oplQ_separating/oplQ_separating.h>
+#include <EA/Default Q-learning/oplQ/oplQ.h>
+#include <EA/Default Q-learning/oplQ_separating/oplQ_separating.h>
+#include <EA/Normalized Q-learning/oplNQ/oplNQ.h>
 
 string get_problem_name(problem probl) {
     switch (probl) {
@@ -71,5 +72,7 @@ struct ea<oplQ> { static string get_name() { return "oplQ"; } };
 template <>
 struct ea<oplQ_separating> { static string get_name() { return "oplQ_separating"; } };
 
+template <>
+struct ea<oplNQ> { static string get_name() { return "oplNQ"; } };
 
 #endif //DIPLOM_NAME_GETTER_H

@@ -2,7 +2,7 @@
 #define DIPLOM_OPLQ_H
 
 
-#include <EA/Q-learning/abstract_oplQ.h>
+#include <EA/Default Q-learning/abstract_oplQ.h>
 
 struct oplQ : private abstract_oplQ {
 

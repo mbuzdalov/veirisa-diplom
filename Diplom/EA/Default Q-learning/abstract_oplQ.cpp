@@ -1,7 +1,8 @@
 #include "abstract_oplQ.h"
 
 void abstract_oplQ::init_Q() {
-    for (size_t i = 0; i <= lambda; ++i) {
+    Q.resize(states_count);
+    for (size_t i = 0; i < states_count; ++i) {
         Q[i][MUL] = Q[i][DIV] = 0;
     }
 }

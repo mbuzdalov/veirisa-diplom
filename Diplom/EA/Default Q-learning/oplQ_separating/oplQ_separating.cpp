@@ -10,7 +10,7 @@ oplQ_separating::oplQ_separating(problem new_probl, size_t new_lambda, size_t ne
     min_p = 2.0 * calc_low_bound(l_bound);
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
-    Q.resize((lambda + 1) / 2 + 1);
+    states_count = (lambda + 1) / 2 + 1;
 }
 
 solution oplQ_separating::generate_solution(const string& init_s) {

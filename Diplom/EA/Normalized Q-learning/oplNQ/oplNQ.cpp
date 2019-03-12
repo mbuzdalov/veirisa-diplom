@@ -1,6 +1,6 @@
-#include "oplQ.h"
+#include "oplNQ.h"
 
-oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
+oplNQ::oplNQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
@@ -10,10 +10,10 @@ oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound
     min_p = calc_low_bound(l_bound);
     alpha = DEFAULT_ALPHA;
     gamma = DEFAULT_GAMMA;
-    Q.resize(lambda + 1);
+    states_count = normalize_states(lambda + 1);
 }
 
-solution oplQ::generate_solution(const string& init_s) {
+solution oplNQ::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     init_Q();
@@ -39,8 +39,8 @@ solution oplQ::generate_solution(const string& init_s) {
             }
         }
         update_params(cur.f, p);
-        learn(suc, op, get_reward(best_f, cur.f), new_suc);
-        operation new_op = change_p(new_suc);
+        learn_normal(suc, op, get_reward(best_f, cur.f), new_suc);
+        operation new_op = change_p_normal(new_suc);
         if (best_f >= cur.f) {
             cur.change(best_dif, best_f);
         }

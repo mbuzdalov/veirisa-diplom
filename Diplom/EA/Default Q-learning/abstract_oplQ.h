@@ -11,6 +11,7 @@ struct abstract_oplQ : public abstract_opl {
     const double DEFAULT_GAMMA = 0.2;
     double alpha, gamma;
     reward rew;
+    size_t states_count;
     vector<array<double, 2>> Q;
 
     void init_Q();

@@ -194,6 +194,7 @@ void fixed_runtime(problem probl, low_bound l_bound, R rew) {
 
 int main() {
 
+    /*
     full_testing<opl, none_reward>(ONE_MAX, ZERO, NONE);
 
     full_testing<opl_separating, none_reward>(ONE_MAX, LINEAR, NONE);
@@ -203,6 +204,22 @@ int main() {
     full_testing<opl_separating, none_reward>(ONE_MAX, QUADRATIC, NONE);
     full_testing<opl_Ab, none_reward>(ONE_MAX, QUADRATIC, NONE);
     full_testing<oplQ, reward>(ONE_MAX, QUADRATIC, DIVISION);
+    */
+
+    size_t lambda = 6400;
+    size_t n = 10000;
+
+    for (int i = 0; i < 5; ++i) {
+        string rs = random_string(generator, n);
+
+        oplQ solverQ(ONE_MAX, lambda, n, LINEAR, DIVISION);
+        cout << "gen_Q: " << solverQ.generate_solution(rs).generations << "\n";
+
+        oplNQ solver(ONE_MAX, lambda, n, LINEAR, DIVISION);
+        cout << "gen_NQ: " << solver.generate_solution(rs).generations << "\n";
+
+        cout << "\n";
+    }
 
     return 0;
 }
