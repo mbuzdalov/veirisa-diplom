@@ -19,6 +19,7 @@ size_t abstract_oplNQ::normalize_states(size_t count) {
 }
 */
 
+/* BEST
 size_t abstract_oplNQ::normalize_states(size_t count) {
     normal_state.resize(count);
     size_t cur_state = 0;
@@ -40,6 +41,7 @@ size_t abstract_oplNQ::normalize_states(size_t count) {
     }
     return cur_normal_state;
 }
+*/
 
 /*
 size_t abstract_oplNQ::normalize_states(size_t count) {

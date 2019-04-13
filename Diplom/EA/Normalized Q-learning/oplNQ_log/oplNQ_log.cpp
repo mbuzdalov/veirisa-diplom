@@ -1,6 +1,7 @@
-#include "oplNQ.h"
+#include "oplNQ_log.h"
 
-oplNQ::oplNQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
+
+oplNQ_log::oplNQ_log(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
@@ -13,24 +14,28 @@ oplNQ::oplNQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bou
     states_count = normalize_states(lambda + 1);
 }
 
-size_t oplNQ::normalize_states(size_t count) {
+size_t oplNQ_log::normalize_states(size_t count) {
     normal_state.resize(count);
     size_t cur_state = 0;
     size_t cur_normal_state = 0;
     size_t start = 0;
-    size_t length = max(size_t(count / (SPLIT * count)), (size_t)1);
+    size_t length = 1;
     while (cur_state < count) {
         size_t border = min(start + length, count);
-        for (; cur_state < border; ++cur_state) {
-            normal_state[cur_state] = cur_normal_state;
+        size_t split_length = (length + SPLIT - 1) / SPLIT;
+        for (size_t i = 0; i < SPLIT && cur_state < min(start + split_length, border); ++i) {
+            for (; cur_state < min(start + split_length, border); ++cur_state) {
+                normal_state[cur_state] = cur_normal_state;
+            }
+            ++cur_normal_state;
+            start = cur_state;
         }
-        ++cur_normal_state;
-        start = cur_state;
+        length *= 2;
     }
     return cur_normal_state;
 }
 
-solution oplNQ::generate_solution(const string& init_s) {
+solution oplNQ_log::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     init_Q();

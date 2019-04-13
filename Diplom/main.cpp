@@ -40,9 +40,9 @@ const size_t BIG_LAMBDA_SIZE = 12;
 const size_t big_lambda[BIG_LAMBDA_SIZE] = {1, 2, 5, 10, 50, 100, 200, 400, 800, 1600, 3200, 6400};
 const size_t LAMBDA_SIZE = SMALL_LAMBDA_SIZE + BIG_LAMBDA_SIZE;
 
-const size_t N_SIZE = 2;
-const size_t small_n[N_SIZE] = {100, 1000};
-const size_t big_n[N_SIZE] = {10000, 100000};
+const size_t N_SIZE = 1;
+const size_t small_n[N_SIZE] = {100};
+const size_t big_n[N_SIZE] = {1000};
 
 aver_solution aver_solut[2][LAMBDA_SIZE][N_SIZE];
 
@@ -142,7 +142,7 @@ void full_testing(problem probl, low_bound l_bound, R rew) {
         }
     }
 
-    write_solution(get_problem_name(probl), algorithm_name);
+    //write_solution(get_problem_name(probl), algorithm_name);
 }
 
 
@@ -206,10 +206,12 @@ int main() {
     full_testing<oplQ, reward>(ONE_MAX, QUADRATIC, DIVISION);
     */
 
+
+    /*
     size_t lambda = 6400;
     size_t n = 10000;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         string rs = random_string(generator, n);
 
         oplQ solverQ(ONE_MAX, lambda, n, LINEAR, DIVISION);
@@ -220,6 +222,12 @@ int main() {
 
         cout << "\n";
     }
+    */
+    //full_testing<opl_Ab, none_reward>(ONE_MAX, LINEAR, NONE);
+    //full_testing<oplQ, reward>(ONE_MAX, LINEAR, DIVISION);
+
+    full_testing<opl_Ab, none_reward>(ONE_MAX, QUADRATIC, NONE);
+    full_testing<oplQ, reward>(ONE_MAX, QUADRATIC, DIVISION);
 
     return 0;
 }

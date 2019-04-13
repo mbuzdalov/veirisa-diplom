@@ -29,7 +29,26 @@ void abstract_oplQ::learn(size_t suc, operation op, double r, size_t new_suc) {
 }
 
 operation abstract_oplQ::change_p(size_t new_suc) {
-    if (Q[new_suc][MUL] > Q[new_suc][DIV] || (Q[new_suc][MUL] == Q[new_suc][DIV] && choice(0.5))) {
+    /*
+    if (choice(1)) {
+        if (Q[new_suc][MUL] > Q[new_suc][DIV] || (Q[new_suc][MUL] == Q[new_suc][DIV] && choice(0.5))) {
+            p = min(p * 2, max_p);
+            return MUL;
+        } else {
+            p = max(p / 2, min_p);
+            return DIV;
+        }
+    } else {
+        if (choice(0.5)) {
+            p = min(p * 2, max_p);
+            return MUL;
+        } else {
+            p = max(p / 2, min_p);
+            return DIV;
+        }
+    }
+    */
+    if (Q[new_suc][MUL] > Q[new_suc][DIV] || (Q[new_suc][MUL] == Q[new_suc][DIV] && new_suc >= max((size_t)1, lambda / 20))) {
         p = min(p * 2, max_p);
         return MUL;
     } else {
