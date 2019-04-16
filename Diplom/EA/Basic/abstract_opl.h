@@ -5,6 +5,7 @@
 #include "source.h"
 
 struct abstract_opl {
+
     problem probl;
     size_t lambda, n;
     double p;
@@ -49,7 +50,6 @@ struct abstract_opl {
         size_t next_ind = get_next_ind(start_ind, prob);
         while (start_ind == 0 && next_ind >= n) {
             next_ind = generator() % n;
-            //next_ind = get_next_ind(start_ind, prob);
         }
         return next_ind;
     }

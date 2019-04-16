@@ -1,16 +1,35 @@
 #include "oplQ.h"
 
-oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, reward new_rew) {
+oplQ::oplQ(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound, learning new_learn) {
     probl = new_probl;
     lambda = new_lambda;
     n = new_n;
-    rew = new_rew;
+    init = new_learn.init;
+    border = (size_t)max(1.0, lambda * DEFAULT_BORDER_COEF);
+    rew = new_learn.rew;
     def_p = NUMERATOR_P / n;
     max_p = 1.0 / 2;
     min_p = calc_low_bound(l_bound);
-    alpha = DEFAULT_ALPHA;
-    gamma = DEFAULT_GAMMA;
-    states_count = lambda + 1;
+    alpha = new_learn.alpha;
+    gamma = new_learn.gamma;
+    states_count = associate_states(new_learn.split_limit, lambda + 1);
+}
+
+size_t oplQ::associate_states(double split_limit, size_t count) {
+    associated_state.resize(count);
+    size_t cur_state = 0;
+    size_t cur_ass_state = 0;
+    size_t start = 0;
+    size_t length = max(size_t(count / split_limit), (size_t)1);
+    while (cur_state < count) {
+        size_t border = min(start + length, count);
+        for (; cur_state < border; ++cur_state) {
+            associated_state[cur_state] = cur_ass_state;
+        }
+        ++cur_ass_state;
+        start = cur_state;
+    }
+    return cur_ass_state;
 }
 
 solution oplQ::generate_solution(const string& init_s) {

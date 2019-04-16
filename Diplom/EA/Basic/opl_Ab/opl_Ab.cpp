@@ -7,7 +7,7 @@ opl_Ab::opl_Ab(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_b
     def_p = NUMERATOR_P / n;
     max_p = 1.0 / 2;
     min_p = calc_low_bound(l_bound);
-    border = max((size_t)1, lambda / 20);
+    border = (size_t)max(1.0, DEFAULT_BORDER_COEF * lambda);
 }
 
 void opl_Ab::change_p(operation op) {

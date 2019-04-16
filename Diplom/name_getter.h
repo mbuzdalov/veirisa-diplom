@@ -6,9 +6,7 @@
 #include <EA/Basic/opl/opl.h>
 #include <EA/Basic/opl_Ab/opl_Ab.h>
 #include <EA/Basic/opl_separating/opl_separating.h>
-#include <EA/Default Q-learning/oplQ/oplQ.h>
-#include <EA/Default Q-learning/oplQ_separating/oplQ_separating.h>
-#include <EA/Normalized Q-learning/oplNQ/oplNQ.h>
+#include <EA/Q-learning/oplQ/oplQ.h>
 
 string get_problem_name(problem probl) {
     switch (probl) {
@@ -25,31 +23,32 @@ string get_problem_name(problem probl) {
 string get_low_bound_name(low_bound l_bound) {
     switch (l_bound) {
         case LINEAR:
-            return "_(line)";
+            return "Linear";
         case QUADRATIC:
-            return "_(quad)";
+            return "Quadratic";
         default:
             return "";
     }
 }
 
 
-string get_reward_name(none_reward rew) {
+string get_learning_name(none_learning none_learn) {
     return "";
 }
 
-string get_reward_name(reward rew) {
-    switch (rew) {
-        case ABSOLUTELY:
-            return "_ABS";
-        case BINARY:
-            return "_BIN";
-        case DIVISION:
-            return "_DIV";
-        case SUBTRACTION:
-            return "_SUB";
-        default:
+string get_learning_name(learning learn) {
+    if (learn.split_limit < MAX_SPLIT_LIMIT) {
+        if (learn.init == AB) {
+            return "_normal+Ab";
+        } else {
+            return "_normal";
+        }
+    } else {
+        if (learn.init == AB) {
+            return "_Ab";
+        } else {
             return "";
+        }
     }
 }
 
@@ -69,10 +68,5 @@ struct ea<opl_Ab> { static string get_name() { return "opl_Ab"; } };
 template <>
 struct ea<oplQ> { static string get_name() { return "oplQ"; } };
 
-template <>
-struct ea<oplQ_separating> { static string get_name() { return "oplQ_separating"; } };
-
-template <>
-struct ea<oplNQ> { static string get_name() { return "oplNQ"; } };
 
 #endif //DIPLOM_NAME_GETTER_H

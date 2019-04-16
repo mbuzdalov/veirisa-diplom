@@ -23,32 +23,17 @@ double abstract_oplQ::get_reward(double child_f, double parent_f) {
 }
 
 void abstract_oplQ::learn(size_t suc, operation op, double r, size_t new_suc) {
+    size_t ass_suc = get_associated_state(suc);
+    size_t ass_new_suc = get_associated_state(new_suc);
     if (suc != UNDEF_STATE && op != UNDEF) {
-        Q[suc][op] = Q[suc][op] + alpha * (r + gamma * max(Q[new_suc][DIV], Q[new_suc][MUL]) - Q[suc][op]);
+        Q[ass_suc][op] = Q[ass_suc][op] + alpha * (r + gamma * max(Q[ass_new_suc][DIV], Q[ass_new_suc][MUL]) - Q[ass_suc][op]);
     }
 }
 
 operation abstract_oplQ::change_p(size_t new_suc) {
-    /*
-    if (choice(1)) {
-        if (Q[new_suc][MUL] > Q[new_suc][DIV] || (Q[new_suc][MUL] == Q[new_suc][DIV] && choice(0.5))) {
-            p = min(p * 2, max_p);
-            return MUL;
-        } else {
-            p = max(p / 2, min_p);
-            return DIV;
-        }
-    } else {
-        if (choice(0.5)) {
-            p = min(p * 2, max_p);
-            return MUL;
-        } else {
-            p = max(p / 2, min_p);
-            return DIV;
-        }
-    }
-    */
-    if (Q[new_suc][MUL] > Q[new_suc][DIV] || (Q[new_suc][MUL] == Q[new_suc][DIV] && new_suc >= max((size_t)1, lambda / 20))) {
+    size_t ass_new_suc = get_associated_state(new_suc);
+    if (Q[ass_new_suc][MUL] > Q[ass_new_suc][DIV] || (Q[ass_new_suc][MUL] == Q[ass_new_suc][DIV]
+        && ((init == AB && new_suc >= border) || (init == RANDOM && choice(0.5))))) {
         p = min(p * 2, max_p);
         return MUL;
     } else {
