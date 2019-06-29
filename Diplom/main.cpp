@@ -1,10 +1,11 @@
 #include "name_getter.h"
+#import "structures.h"
 
 // ------------------------------------- Common -------------------------------------
 
 // --- String generator ---
 
-mt19937 generator(time(0));
+mt19937 generator(4);
 
 string random_string(mt19937 generator, size_t n) {
     char a[n];
@@ -21,37 +22,51 @@ string random_string(mt19937 generator, size_t n) {
 // --- Solver creater ---
 
 template <typename OPL>
-OPL create_solver(problem probl, size_t lambda, size_t n, low_bound l_bound, none_learning none_learn) {
-    return OPL(probl, lambda, n, l_bound);
+OPL create_solver(const w_model& model, size_t lambda, size_t n, low_bound l_bound, none_learning none_learn) {
+    return OPL(model, lambda, n, l_bound);
 }
 
 template <typename OPLQ>
-OPLQ create_solver(problem probl, size_t lambda, size_t n, low_bound l_bound, learning learn) {
-    return OPLQ(probl, lambda, n, l_bound, learn);
+OPLQ create_solver(const w_model& model, size_t lambda, size_t n, low_bound l_bound, learning learn) {
+    return OPLQ(model, lambda, n, l_bound, learn);
 }
 
 
 // ------------------------------------- Tester -------------------------------------
 
-const size_t LAMBDA_SIZE = 2;
-const size_t big_lambda[LAMBDA_SIZE] = {/*1, 2, 5, 10, 50, 100, 200, 400, 800, 1600, */ 3200, 6400};
+const size_t LAMBDA_SIZE = 10;
+const size_t test_lambda[LAMBDA_SIZE] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512};
 
 const size_t N_SIZE = 1;
-const size_t big_n[N_SIZE] = {1000};
+size_t test_n[N_SIZE] = {1000};
 
 aver_solution aver_solut[LAMBDA_SIZE][N_SIZE];
 
-const size_t TEST_SIZE = 10;
+const size_t TEST_SIZE = 100;
 solution test_solut[TEST_SIZE];
 
 
+bool generated = false;
+string test_str[TEST_SIZE];
+
+string random_string(mt19937 generator, size_t n, size_t test) {
+    if (!generated) {
+        for (size_t i = 0; i < TEST_SIZE; ++i) {
+            test_str[i] = random_string(generator, n);
+        }
+        generated = true;
+    }
+    return test_str[test];
+}
+
+
 void write_evaluations(const string& probl_name, const string& l_bound_name, const string& algorithm_name) {
-    ofstream fout_eval("Results/" + probl_name + "/" + l_bound_name + "/Evaluations/eval_" + algorithm_name + ".txt");
-    //fout_eval << algorithm_name << " (n - lambda - evaluations - deviation):\n\n";
+    ofstream fout_eval("Results/" + probl_name + "/" + l_bound_name + "/Evaluations/" + algorithm_name + ".txt");
+    fout_eval << "lambda - n - evaluations - deviation\n";
     for (size_t i = 0; i < LAMBDA_SIZE; ++i) {
-        size_t lambda = big_lambda[i];
+        size_t lambda = test_lambda[i];
         for (size_t j = 0; j < N_SIZE; ++j) {
-            size_t n = big_n[j];
+            size_t n = test_n[j];
             fout_eval << lambda << "\t"
                       << n << "\t"
                       << aver_solut[i][j].evaluations << "\t"
@@ -61,12 +76,12 @@ void write_evaluations(const string& probl_name, const string& l_bound_name, con
 }
 
 void write_generations(const string& probl_name, const string& l_bound_name, const string& algorithm_name) {
-    ofstream fout_gen("Results/" + probl_name + "/" + l_bound_name + "/Generations/gen_" + algorithm_name + ".txt");
-    //fout_gen << algorithm_name << " (n - lambda - generations - deviation):\n\n";
+    ofstream fout_gen("Results/" + probl_name + "/" + l_bound_name + "/Generations/" + algorithm_name + ".txt");
+    fout_gen << "n - lambda - generations - deviation\n";
     for (size_t j = 0; j < N_SIZE; ++j) {
-        size_t n = big_n[j];
+        size_t n = test_n[j];
         for (size_t i = 0; i < LAMBDA_SIZE; ++i) {
-            size_t lambda = big_lambda[i];
+            size_t lambda = test_lambda[i];
             fout_gen << n << "\t"
                      << lambda << "\t"
                      << aver_solut[i][j].generations << "\t"
@@ -75,13 +90,31 @@ void write_generations(const string& probl_name, const string& l_bound_name, con
     }
 }
 
+void write_mediana(const string& probl_name, const string& l_bound_name, const string& algorithm_name) {
+    ofstream fout_gen("Results/" + probl_name + "/" + l_bound_name + "/Mediana/" + algorithm_name + ".txt");
+    fout_gen << "n - lambda - med generations - generations\n";
+    for (size_t j = 0; j < N_SIZE; ++j) {
+        size_t n = test_n[j];
+        for (size_t i = 0; i < LAMBDA_SIZE; ++i) {
+            size_t lambda = test_lambda[i];
+            fout_gen << n << "\t"
+                     << lambda << "\t"
+                     << aver_solut[i][j].gen_med;
+            for (size_t k = 0; k < aver_solut[i][j].gen.size(); ++k) {
+                fout_gen << "\t" << aver_solut[i][j].gen[k];
+            }
+            fout_gen << "\n";
+        }
+    }
+}
+
 template <typename OPL>
 void testing(size_t lam_ind, size_t n_ind, OPL solver) {
-    size_t n = big_n[n_ind];
+    size_t n = test_n[n_ind];
 
     size_t evaluations = 0, generations = 0;
     for (size_t test = 0; test < TEST_SIZE; ++test) {
-        test_solut[test] = solver.generate_solution(random_string(generator, n));
+        test_solut[test] = solver.generate_solution(random_string(generator, n, test));
         evaluations += test_solut[test].evaluations;
         generations += test_solut[test].generations;
     }
@@ -96,118 +129,142 @@ void testing(size_t lam_ind, size_t n_ind, OPL solver) {
     eval_deviation = (size_t) sqrt((eval_deviation + TEST_SIZE / 2) / TEST_SIZE);
     gen_deviation = (size_t) sqrt((gen_deviation + TEST_SIZE / 2) / TEST_SIZE);
 
-    aver_solut[lam_ind][n_ind] = {evaluations, eval_deviation, generations, gen_deviation};
+    vector<size_t> test_gen_sort, test_gen;
+    for (size_t test = 0; test < TEST_SIZE; ++test) {
+        test_gen.push_back(test_solut[test].generations);
+    }
+    test_gen_sort = test_gen;
+    sort(test_gen_sort.begin(), test_gen_sort.end());
+
+    aver_solut[lam_ind][n_ind] =
+            {evaluations, eval_deviation, generations, gen_deviation, test_gen, test_gen_sort[TEST_SIZE / 2]};
 }
 
 
+
 template <typename OPL, typename LT>
-void full_testing(problem probl, low_bound l_bound, LT learn) {
+void full_testing(const w_model& model, low_bound l_bound, LT learn) {
+    string probl_name = get_model_name(model);
+    string l_bound_name = get_low_bound_name(l_bound);
     string algorithm_name = ea<OPL>::get_name() + get_learning_name(learn);
-    cout <<  "\n" << "testing: " << algorithm_name << "\n\n";
+    cout <<  "\n" << "testing (" <<  probl_name << ", " << l_bound_name << "): " << algorithm_name << "\n\n";
 
     for (size_t i = 0; i < LAMBDA_SIZE; ++i) {
-        size_t lambda = big_lambda[i];
+        size_t lambda = test_lambda[i];
         for (size_t j = 0; j < N_SIZE; ++j) {
-            size_t n = big_n[j];
-            cout << "lambda: " << lambda << "  n: " << n;// << "\n";
-            clock_t t = clock();
-            OPL solver = create_solver<OPL>(probl, lambda, n, l_bound, learn);
+            size_t n = test_n[j];
+            cout << "lambda: " << lambda << "  n: " << n << "\n";
+            OPL solver = create_solver<OPL>(model, lambda, n, l_bound, learn);
             testing<OPL>(i, j, solver);
-            cout << "  generations: " << aver_solut[i][j].generations
-                 << "  deviation: " << aver_solut[i][j].gen_deviation << "\n";
         }
     }
 
-    //write_evaluations(get_problem_name(probl), get_low_bound_name(l_bound), algorithm_name);
-    //write_generations(get_problem_name(probl), get_low_bound_name(l_bound), algorithm_name);
+    write_evaluations(probl_name, l_bound_name, algorithm_name);
+    write_generations(probl_name, l_bound_name, algorithm_name);
+    write_mediana(probl_name, l_bound_name, algorithm_name);
 }
 
 
 // ------------------------------------- Fixed runtime -------------------------------------
 
-const size_t fr_lambda = 1600;
+const size_t fr_lambda = 32;
 const size_t fr_n = 10000;
-const string fr_test_string = random_string(generator, fr_n);
 
 parameters params;
-
+vector<size_t> count_tests;
 
 void write_parameters(const string& probl_name, const string& l_bound_name, const string& algorithm_name) {
     ofstream fout_func("Results/" + probl_name + "/" + l_bound_name + "/Function/" + to_string(fr_lambda) +
-                        "/func_" + algorithm_name + ".txt");
-    //fout_func << algorithm_name << " (function):\n";
-    //fout_func << "~  n = " << fr_n << "  ~  " << "lambda = " << fr_lambda << "  ~\n\n";
+                       "/" + algorithm_name + ".txt");
+    fout_func << algorithm_name << " (function):\n";
+    fout_func << "~  n = " << fr_n << "  ~  " << "lambda = " << fr_lambda << "  ~\n\n";
     for (size_t i = 0; i < params.f.size(); ++i) {
         fout_func << params.f[i] << "\t";
-    }
-
-    cout << "Params size: " << params.f.size() << "\n\n";
-
-    ofstream fout_prob("Results/" + probl_name + "/" + l_bound_name + "/Probability/" + to_string(fr_lambda) +
-                        "/prob_" + algorithm_name + ".txt");
-    //fout_prob << algorithm_name << " (probability):\n";
-    //fout_prob << "~  n = " << fr_n << "  ~  " << "lambda = " << fr_lambda << "  ~\n\n";
-    for (size_t i = 0; i < params.p.size(); ++i) {
-        if (!isnan(params.p[i])) {
-            fout_prob << fixed << setprecision(8) << params.p[i];
-        }
-        fout_prob << "\t";
     }
 }
 
 template <typename OPL, typename LT>
-void fixed_runtime(problem probl, low_bound l_bound, LT learn) {
+void fixed_runtime(const w_model& model, low_bound l_bound, LT learn) {
     string algorithm_name = ea<OPL>::get_name() + get_learning_name(learn);
     cout <<  "\n" << "fixed runtime: " << algorithm_name << "\n\n";
 
-    OPL solver = create_solver<OPL>(probl, fr_lambda, fr_n, l_bound, learn);
-    solver.generate_solution(fr_test_string);
-    params = solver.get_params();
+    params = {{}, {}};
+    count_tests = {};
+    OPL solver = create_solver<OPL>(model, fr_lambda, fr_n, l_bound, learn);
+    for (size_t t = 0; t < TEST_SIZE; ++t) {
+        cout << "test: " << t << "\n";
+        solver.generate_solution(random_string(generator, fr_n, t));
+        parameters cur_params = solver.get_params();
+        for (size_t i = 0; i < cur_params.f.size(); ++i) {
+            if (params.f.size() <= i) {
+                params.f.push_back(0);
+                count_tests.push_back(0);
+            }
+            params.f[i] += cur_params.f[i];
+            ++count_tests[i];
+        }
+    }
+    for (size_t i = 0; i < params.f.size(); ++i) {
+        for (size_t c = count_tests[i]; c < TEST_SIZE; ++c) {
+            params.f[i] += fr_n;
+        }
+        params.f[i] = (params.f[i] + TEST_SIZE / 2) / TEST_SIZE;
+        if (params.f[i] == fr_n) {
+            params.f.resize(i + 1);
+            break;
+        }
+    }
 
-    write_parameters(get_problem_name(probl), get_low_bound_name(l_bound), algorithm_name);
+    write_parameters(get_model_name(model), get_low_bound_name(l_bound), algorithm_name);
+}
+
+
+// ------------------------------------- Test -------------------------------------
+
+// ONE MAX - LINEAR
+void test_onemax_line() {
+    full_testing<opl, none_learning>(CLEAR_ONE_MAX, LINEAR, NONE_LEARN);
+    full_testing<opl_separating, none_learning>(CLEAR_ONE_MAX, LINEAR, NONE_LEARN);
+    full_testing<opl_Ab, none_learning>(CLEAR_ONE_MAX, LINEAR, NONE_LEARN);
+    full_testing<oplQ, learning>(CLEAR_ONE_MAX, LINEAR, DEFAULT_LEARN);
+    full_testing<oplQ, learning>(CLEAR_ONE_MAX, LINEAR, DEFAULT_LEARN_AB);
+
+}
+
+// ONE MAX - QUADRATIC
+void test_onemax_quad() {
+    full_testing<opl, none_learning>(CLEAR_ONE_MAX, QUADRATIC, NONE_LEARN);
+    full_testing<opl_separating, none_learning>(CLEAR_ONE_MAX, QUADRATIC, NONE_LEARN);
+    full_testing<opl_Ab, none_learning>(CLEAR_ONE_MAX, QUADRATIC, NONE_LEARN);
+    full_testing<oplQ, learning>(CLEAR_ONE_MAX, QUADRATIC, DEFAULT_LEARN);
+    full_testing<oplQ, learning>(CLEAR_ONE_MAX, QUADRATIC, DEFAULT_LEARN_AB);
+}
+
+// LEADING ONES - LINEAR
+void test_leading_ones_line() {
+    full_testing<opl, none_learning>(CLEAR_LEADING_ONES, LINEAR, NONE_LEARN);
+    full_testing<opl_separating, none_learning>(CLEAR_LEADING_ONES, LINEAR, NONE_LEARN);
+    full_testing<opl_Ab, none_learning>(CLEAR_LEADING_ONES, LINEAR, NONE_LEARN);
+    full_testing<oplQ, learning>(CLEAR_LEADING_ONES, LINEAR, DEFAULT_LEARN);
+    full_testing<oplQ, learning>(CLEAR_LEADING_ONES, LINEAR, DEFAULT_LEARN_AB);
+}
+
+// LEADING ONES - QUADRATIC
+void test_leading_ones_quad() {
+    full_testing<opl, none_learning>(CLEAR_LEADING_ONES, QUADRATIC, NONE_LEARN);
+    full_testing<opl_separating, none_learning>(CLEAR_LEADING_ONES, QUADRATIC, NONE_LEARN);
+    full_testing<opl_Ab, none_learning>(CLEAR_LEADING_ONES, QUADRATIC, NONE_LEARN);
+    full_testing<oplQ, learning>(CLEAR_LEADING_ONES, QUADRATIC, DEFAULT_LEARN);
+    full_testing<oplQ, learning>(CLEAR_LEADING_ONES, QUADRATIC, DEFAULT_LEARN_AB);
 }
 
 
 // ------------------------------------- Main -------------------------------------
 
 int main() {
-
-    size_t lambda_s = 3200;
-    size_t lambda_b = 6400;
-    size_t n = 10000;
-
-    for (int i = 0; i < 10; ++i) {
-        string rs = random_string(generator, n);
-
-        oplQ solverQ(ONE_MAX, lambda_s, n, LINEAR, DEFAULT_LEARN);
-        cout << "gen_Q (" << lambda_s << "): " << solverQ.generate_solution(rs).generations << "\n";
-
-        oplQ solverQNorm(ONE_MAX, lambda_s, n, LINEAR, DEFAULT_NORM_LEARN);
-        cout << "gen_NQ (" << lambda_s << "): " << solverQNorm.generate_solution(rs).generations << "\n";
-
-        cout << "\n";
-
-        oplQ solverQB(ONE_MAX, lambda_b, n, LINEAR, DEFAULT_LEARN);
-        cout << "gen_Q (" << lambda_b << "): " << solverQB.generate_solution(rs).generations << "\n";
-
-        oplQ solverQNormB(ONE_MAX, lambda_b, n, LINEAR, DEFAULT_NORM_LEARN);
-        cout << "gen_NQ (" << lambda_b << "): " << solverQNormB.generate_solution(rs).generations << "\n";
-
-        cout << "\n\n";
-    }
-
-    //full_testing<opl, none_learning>(ONE_MAX, LINEAR, NONE_LEARN);
-    //full_testing<opl_separating, none_learning>(ONE_MAX, LINEAR, NONE_LEARN);
-
-    //full_testing<opl_Ab, none_learning>(ONE_MAX, LINEAR, NONE_LEARN);
-
-    //full_testing<oplQ, learning>(ONE_MAX, LINEAR, DEFAULT_LEARN);
-    //full_testing<oplQ, learning>(ONE_MAX, LINEAR, DEFAULT_LEARN_AB);
-    //full_testing<oplQ, learning>(ONE_MAX, LINEAR, DEFAULT_NORM_LEARN);
-    for (int i = 0; i < 10; ++i) {
-        full_testing<oplQ, learning>(ONE_MAX, QUADRATIC, DEFAULT_LEARN);
-        full_testing<oplQ, learning>(ONE_MAX, QUADRATIC, DEFAULT_NORM_LEARN);
-    }
-
+    test_onemax_line();
+    test_onemax_quad();
+    test_leading_ones_line();
+    test_leading_ones_quad();
     return 0;
 }

@@ -3,36 +3,21 @@
 
 
 #include "source.h"
+#import "EA/representative.h"
+#import "WModel/w_model.h"
 
 struct abstract_opl {
 
-    problem probl;
+    w_model model;
     size_t lambda, n;
     double p;
     double def_p, min_p, max_p;
+    random_jump jump;
     vector<size_t> param_f;
     vector<size_t> param_p_size;
     vector<double> param_p_sum;
 
-    mt19937 generator = mt19937(unsigned(time(0)));
-
-    struct representative {
-        string s;
-        size_t f;
-
-        representative(const string& new_s, size_t new_f) : s(new_s), f(new_f) {};
-
-        void change(const vector<size_t>& dif, size_t new_f) {
-            f = new_f;
-            for (size_t i = 0; i < dif.size(); ++i) {
-                if (s[dif[i]] == '1') {
-                    s[dif[i]] = '0';
-                } else {
-                    s[dif[i]] = '1';
-                }
-            }
-        }
-    };
+    mt19937 generator = mt19937(3);
 
     inline void init_p() {
         p = def_p;
@@ -58,9 +43,8 @@ struct abstract_opl {
     void init_params();
     void update_params(size_t cur_f, double cur_p);
     parameters convert_params();
-    size_t init_func(const string& s);
-    size_t func(const representative& parent, const vector<size_t>& dif);
     vector<size_t> generate_dif(const string& s, double prob);
+    void change_p(operation op);
 };
 
 

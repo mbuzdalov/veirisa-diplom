@@ -5,6 +5,10 @@ void abstract_oplQ::init_Q() {
     for (size_t i = 0; i < states_count; ++i) {
         Q[i][MUL] = Q[i][DIV] = 0;
     }
+    visit.resize(states_count);
+    for (size_t i = 0; i < states_count; ++i) {
+        visit[i] = 0;
+    }
 }
 
 double abstract_oplQ::get_reward(double child_f, double parent_f) {
@@ -12,7 +16,7 @@ double abstract_oplQ::get_reward(double child_f, double parent_f) {
         case ABSOLUTELY:
             return child_f;
         case BINARY:
-            return child_f > parent_f ? 1 : 0;
+            return child_f == parent_f ? 0 : (child_f > parent_f ? 1 : -1);
         case SUBTRACTION:
             return child_f - parent_f;
         case DIVISION:
@@ -32,12 +36,16 @@ void abstract_oplQ::learn(size_t suc, operation op, double r, size_t new_suc) {
 
 operation abstract_oplQ::change_p(size_t new_suc) {
     size_t ass_new_suc = get_associated_state(new_suc);
+    ++visit[ass_new_suc];
+    operation res_op;
     if (Q[ass_new_suc][MUL] > Q[ass_new_suc][DIV] || (Q[ass_new_suc][MUL] == Q[ass_new_suc][DIV]
-        && ((init == AB && new_suc >= border) || (init == RANDOM && choice(0.5))))) {
-        p = min(p * 2, max_p);
-        return MUL;
+        && ((init == AB && new_suc > 0) || (init == RANDOM && choice(0.5))))) {
+        p *= 2;
+        res_op = MUL;
     } else {
-        p = max(p / 2, min_p);
-        return DIV;
+        p *= 0.5;
+        res_op = DIV;
     }
+    p = max(min_p, min(p, max_p));
+    return res_op;
 }

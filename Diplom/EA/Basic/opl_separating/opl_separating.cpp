@@ -1,39 +1,25 @@
 #include "opl_separating.h"
 
-opl_separating::opl_separating(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound) {
-    probl = new_probl;
+opl_separating::opl_separating(const w_model& new_model, size_t new_lambda, size_t new_n, low_bound l_bound) {
+    model = new_model;
+    model.set_target(new_n);
     lambda = new_lambda;
     n = new_n;
-    def_p = NUMERATOR_P / n;
+    def_p = 2 * DEFAULT_NUM_P / n;
     max_p = 1.0 / 4;
     min_p = 2.0 * calc_low_bound(l_bound);
-}
-
-void opl_separating::change_p(operation op) {
-    if (choice(0.5)) {
-        if (op == MUL) {
-            p = min(p * 2, max_p);
-        } else {
-            p = max(p / 2, min_p);
-        }
-    } else {
-        if (choice(0.5)) {
-            p = min(p * 2, max_p);
-        } else {
-            p = max(p / 2, min_p);
-        }
-    }
+    jump = HALF2_JUMP;
 }
 
 solution opl_separating::generate_solution(const string& init_s) {
     assert(init_s.size() == n);
     init_p();
     init_params();
-    representative cur(init_s, init_func(init_s));
+    representative cur(init_s, model.init_func(init_s));
     size_t evaluations = 1;
     size_t generations = 0;
     size_t half_lambda = lambda >> 1;
-    while (cur.f < n) {
+    while (cur.f < model.get_target_value()) {
         vector<size_t> best_dif;
         size_t best_f = 0;
         operation best_op = UNDEF;
@@ -43,7 +29,7 @@ solution opl_separating::generate_solution(const string& init_s) {
                 is_mul = !is_mul;
             }
             vector<size_t> dif = move(generate_dif(cur.s, is_mul ? p * 2 : p / 2));
-            size_t f = func(cur, dif);
+            size_t f = model.func(cur, dif);
             if (f >= best_f) {
                 best_f = f;
                 best_dif = move(dif);

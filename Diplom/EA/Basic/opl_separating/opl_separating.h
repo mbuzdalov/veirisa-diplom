@@ -6,14 +6,9 @@
 
 struct opl_separating : private abstract_opl {
 
-    explicit opl_separating(problem new_probl, size_t new_lambda, size_t new_n, low_bound l_bound);
+    explicit opl_separating(const w_model& new_model, size_t new_lambda, size_t new_n, low_bound l_bound);
     solution generate_solution(const string& init_s);
     inline parameters get_params() {return convert_params();};
-
-private:
-
-    const double NUMERATOR_P = 2;
-    void change_p(operation op);
 
 };
 

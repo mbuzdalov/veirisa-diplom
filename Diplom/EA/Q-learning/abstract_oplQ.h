@@ -8,11 +8,11 @@ struct abstract_oplQ : public abstract_opl {
 
     double alpha, gamma;
     initial init;
-    size_t border;
     reward rew;
     size_t states_count;
     vector<size_t> associated_state;
     vector<array<double, 2>> Q;
+    vector<size_t> visit;
 
     inline size_t get_associated_state(size_t st) {
         return st == UNDEF_STATE ? st : associated_state[st];
