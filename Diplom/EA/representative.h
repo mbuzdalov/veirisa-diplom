@@ -1,7 +1,7 @@
 #ifndef DIPLOM_REPRESENTATIVE_H
 #define DIPLOM_REPRESENTATIVE_H
 
-#import "source.h"
+#include "source.h"
 
 
 struct representative {

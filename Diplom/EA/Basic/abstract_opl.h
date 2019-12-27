@@ -3,8 +3,8 @@
 
 
 #include "source.h"
-#import "EA/representative.h"
-#import "WModel/w_model.h"
+#include "EA/representative.h"
+#include "WModel/w_model.h"
 
 struct abstract_opl {
 

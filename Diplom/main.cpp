@@ -3,7 +3,7 @@
 using std::sort;
 
 #include "name_getter.h"
-#import "structures.h"
+#include "structures.h"
 
 // ------------------------------------- Common -------------------------------------
 

@@ -1,7 +1,7 @@
 #ifndef DIPLOM_STRUCTURES_H
 #define DIPLOM_STRUCTURES_H
 
-#import "source.h"
+#include "source.h"
 #include <WModel/w_model.h>
 
 // --- W-model structures ---
